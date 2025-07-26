@@ -1,0 +1,7 @@
+crewai
+chromadb==0.5.23
+groq
+google-generativeai
+streamlit
+requests
+python-dotenv
