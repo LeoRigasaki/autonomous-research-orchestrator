@@ -5,3 +5,7 @@ google-generativeai
 streamlit
 requests
 python-dotenv
+arxiv
+feedparser
+plotly
+pandas

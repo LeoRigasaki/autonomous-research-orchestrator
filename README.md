@@ -29,7 +29,7 @@ flowchart LR
 ## Tech Stack
 
 - **CrewAI**: Agent orchestration framework
-- **Groq API**: Fast LLM inference (Llama-3.1-70B, Mixtral-8x7B)
+- **Groq API**: Fast LLM inference (llama-3.3-70B, Mixtral-8x7B)
 - **Gemini API**: Long-context analysis (1M+ tokens)
 - **Chroma DB**: Vector database for semantic search
 - **Streamlit**: Web interface
