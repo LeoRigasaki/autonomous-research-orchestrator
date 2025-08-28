@@ -1,11 +1,28 @@
-crewai
-chromadb==0.5.23
-groq
-google-generativeai
-streamlit
-requests
-python-dotenv
-arxiv
-feedparser
-plotly
-pandas
+# Core LangChain
+langchain
+langchain-core
+langchain-community
+
+# LLM Integrations
+langchain-groq
+langchain-google-genai
+
+# Vector Store
+langchain-chroma
+chromadb
+
+# Tools & APIs
+arxiv==2.1.3
+requests==2.32.3
+feedparser==6.0.11
+
+# Data Processing
+pandas==2.2.3
+plotly==5.24.1
+
+# Environment & Web
+python-dotenv==1.0.1
+streamlit==1.39.0
+
+# Embeddings
+sentence-transformers==3.2.1
