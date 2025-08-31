@@ -23,37 +23,45 @@ Ensure agents have the right context for their tasks."""),
     
     def execute(self, task: str, session_data: Dict[str, Any] = None) -> Dict[str, Any]:
         """Execute memory management task"""
-        # Get context from current memory only
+        # Get context specific to the current query
         context = self.memory.get_context(task, max_docs=5)
         
-        context_prompt = f"""
-Memory Management Task: {task}
+        # If no specific context, indicate this clearly
+        if not context or context == "No relevant context found.":
+            context_analysis = f"""
+Task: {task}
 
-Session Data:
-{json.dumps(session_data, indent=2) if session_data else 'No session data'}
+No specific context found for this query. This appears to be a new research topic.
+The system will proceed with fresh research and analysis.
 
-Available Context:
+Recommendation: Gather comprehensive information from research sources 
+and build new knowledge base for future queries on this topic.
+"""
+        else:
+            context_analysis = f"""
+Task: {task}
+
+Found relevant context from previous research:
 {context}
 
-Provide context analysis and recommendations for task execution.
+This information can be used to inform current analysis and avoid 
+duplicating previous research efforts.
 """
         
-        response = self.llm.invoke([HumanMessage(content=context_prompt)])
-        
-        # Store context management results
+        # Store the task for future context
         metadata = {
             "agent": "memory",
             "task": task,
-            "context_available": bool(context.strip())
+            "timestamp": str(session_data.get("timestamp", "unknown")) if session_data else "unknown"
         }
         
-        self.memory.store_research(response.content, metadata)
+        self.memory.store_research(f"Query: {task}", metadata)
         
         return {
             "agent": "memory",
             "task": task,
-            "context_analysis": response.content,
-            "has_context": bool(context.strip())
+            "context_analysis": context_analysis,
+            "has_context": bool(context and context != "No relevant context found.")
         }
     
     def get_agent_context(self, agent_type: str, query: str) -> str:

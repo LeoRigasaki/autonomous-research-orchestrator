@@ -28,42 +28,29 @@ Plan the workflow and coordinate agents to complete the user's request."""),
         ])
     
     def plan_workflow(self, request: str) -> List[str]:
-        """Plan agent execution workflow"""
-        planning_prompt = f"""
-User Request: {request}
-
-Available Agents: research, analysis, summary, memory
-
-Plan the optimal agent execution sequence. Return a simple list like:
-["memory", "research", "analysis", "summary"]
-
-Consider:
-- Does this need research first?
-- Is analysis of data required?
-- Should memory be checked for context?
-- Is a summary/report the final output?
-"""
+        """Plan agent execution workflow based on request type"""
+        # Analyze request type
+        request_lower = request.lower()
         
-        response = self.llm.invoke([HumanMessage(content=planning_prompt)])
+        # Technical/protocol queries
+        if any(term in request_lower for term in ["mcp", "protocol", "server", "api", "technical"]):
+            return ["memory", "research", "analysis", "summary"]
         
-        # Simple workflow parsing
-        workflow = []
-        content = response.content.lower()
+        # Research-heavy queries
+        elif any(term in request_lower for term in ["trends", "research", "study", "analysis", "survey"]):
+            return ["memory", "research", "analysis", "summary"]
         
-        if "memory" in content:
-            workflow.append("memory")
-        if "research" in content:
-            workflow.append("research")
-        if "analysis" in content:
-            workflow.append("analysis")
-        if "summary" in content:
-            workflow.append("summary")
-            
-        # Default workflow if parsing fails
-        if not workflow:
-            workflow = ["memory", "research", "analysis", "summary"]
-            
-        return workflow
+        # Quick factual queries
+        elif any(term in request_lower for term in ["what is", "define", "explain", "how"]):
+            return ["memory", "research", "summary"]
+        
+        # Complex analysis queries
+        elif any(term in request_lower for term in ["analyze", "compare", "evaluate", "assess"]):
+            return ["memory", "research", "analysis", "summary"]
+        
+        # Default comprehensive workflow
+        else:
+            return ["memory", "research", "analysis", "summary"]
     
     @property
     def research_agent(self):

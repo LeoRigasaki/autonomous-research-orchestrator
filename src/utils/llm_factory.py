@@ -1,6 +1,6 @@
 from langchain_groq import ChatGroq
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from .config import Config
 
 class LLMFactory:
@@ -22,7 +22,7 @@ class LLMFactory:
     
     @staticmethod
     def get_embeddings():
-        # Use HuggingFace embeddings instead of Gemini to avoid async issues
+        # Use larger HuggingFace model to match expected 768 dimensions
         return HuggingFaceEmbeddings(
             model_name="sentence-transformers/all-mpnet-base-v2"
         )

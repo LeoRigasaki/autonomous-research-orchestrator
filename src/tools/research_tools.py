@@ -30,23 +30,50 @@ def search_arxiv(query: str, max_results: int = 5) -> List[Dict]:
 def search_web(query: str) -> Dict:
     """Search web for current information"""
     try:
-        # Using a simple news API for demonstration
-        url = f"https://feeds.feedburner.com/oreilly/radar"
-        feed = feedparser.parse(url)
-        
         results = []
-        for entry in feed.entries[:5]:
-            if query.lower() in entry.title.lower() or query.lower() in entry.summary.lower():
+        
+        # Multiple search strategies
+        search_urls = [
+            f"https://feeds.feedburner.com/oreilly/radar",
+            f"https://rss.cnn.com/rss/edition.rss",
+            f"https://feeds.bbci.co.uk/news/technology/rss.xml"
+        ]
+        
+        for url in search_urls:
+            try:
+                feed = feedparser.parse(url)
+                for entry in feed.entries[:3]:  # Limit per source
+                    if query.lower() in entry.title.lower() or query.lower() in entry.get('summary', '').lower():
+                        results.append({
+                            "title": entry.title,
+                            "summary": entry.get('summary', entry.get('description', 'No summary')),
+                            "link": entry.link,
+                            "published": entry.get('published', 'No date'),
+                            "source": url
+                        })
+            except:
+                continue
+        
+        # If no RSS results, try simple HTTP search
+        if not results:
+            search_terms = [
+                f"site:github.com {query}",
+                f"{query} documentation",
+                f"{query} tutorial"
+            ]
+            
+            for term in search_terms[:2]:  # Limit searches
                 results.append({
-                    "title": entry.title,
-                    "summary": entry.summary,
-                    "link": entry.link,
-                    "published": entry.published
+                    "title": f"Search: {term}",
+                    "summary": f"Suggested search for {query} related information",
+                    "link": f"https://www.google.com/search?q={term.replace(' ', '+')}",
+                    "published": "Current",
+                    "source": "web_search"
                 })
         
-        return {"results": results, "query": query}
+        return {"results": results, "query": query, "total_found": len(results)}
     except Exception as e:
-        return {"error": str(e), "query": query}
+        return {"error": str(e), "query": query, "results": []}
 
 @tool
 def get_paper_content(pdf_url: str) -> str:

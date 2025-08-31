@@ -2,7 +2,7 @@
 langchain
 langchain-core
 langchain-community
-
+langchain-huggingface
 # LLM Integrations
 langchain-groq
 langchain-google-genai
